@@ -74,7 +74,7 @@ readReport bs =
     ; m <- getMessage bs
     ; t <- getTimestamp bs
     ; t <- parseTimestamp "%d.%m.%Y %H:%M" t <|> parseTimestamp "%Y-%m-%dT%H:%M:%S" t
-    ; Just Report { username = u, message = m, timestamp = t }
+    ; return Report { username = u, message = m, timestamp = t }
   }
 
 -- parseTimestamp "%Y-%m-%dT%H:%M:%S"
