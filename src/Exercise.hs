@@ -9,7 +9,7 @@
 -- This short exercise simulates real world haskell programming.
 --
 -- Many of the necessary functions are already provided. Please use them as much
--- as possible. 
+-- as possible.
 ------------------------------------------------------------------------------
 module Exercise where
 
@@ -25,6 +25,7 @@ import           Data.Maybe (mapMaybe)
 
 import           Control.Lens
 import           Control.Monad.Plus
+import           Control.Applicative
 
 -- * Part 1: Reading a report
 --
@@ -66,17 +67,23 @@ getUser bs = T.unpack <$> bs ^? key "username" . _String
 
 -- | Map a bytestring to a `Report` data type if all required
 -- fields are present in the input.
--- 
--- XXX: IMPLEMENT THIS!
+--
 readReport :: ByteString -> Maybe Report
-readReport _ = Nothing
+readReport bs =
+  do { u <- getUser bs
+    ; m <- getMessage bs
+    ; t <- getTimestamp bs
+    ; t <- parseTimestamp "%d.%m.%Y %H:%M" t <|> parseTimestamp "%Y-%m-%dT%H:%M:%S" t
+    ; Just Report { username = u, message = m, timestamp = t }
+  }
+
+-- parseTimestamp "%Y-%m-%dT%H:%M:%S"
 
 -- | Read all valid reports from a list of bytestrings.
 -- One bytestring per report.
 --
--- XXX: IMPLEMENT THIS!
 readValidReports :: [ByteString] -> [Report]
-readValidReports _ = []
+readValidReports = mapMaybe readReport
 
 -- ** Utility
 
