@@ -65,6 +65,8 @@ getMessage bs = T.unpack <$> bs ^? key "message" . _String
 getUser :: ByteString -> Maybe String
 getUser bs = T.unpack <$> bs ^? key "username" . _String
 
+timeFormats = ["%d.%m.%Y %H:%M", "%Y-%m-%dT%H:%M:%S"]
+
 -- | Map a bytestring to a `Report` data type if all required
 -- fields are present in the input.
 --
@@ -73,11 +75,9 @@ readReport bs =
   do { u <- getUser bs
     ; m <- getMessage bs
     ; t <- getTimestamp bs
-    ; t <- parseTimestamp "%d.%m.%Y %H:%M" t <|> parseTimestamp "%Y-%m-%dT%H:%M:%S" t
+    ; t <- msum ((`parseTimestamp` t) <$> timeFormats)
     ; return Report { username = u, message = m, timestamp = t }
   }
-
--- parseTimestamp "%Y-%m-%dT%H:%M:%S"
 
 -- | Read all valid reports from a list of bytestrings.
 -- One bytestring per report.
