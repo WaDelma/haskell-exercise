@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NamedFieldPuns #-}
 ------------------------------------------------------------------------------
 -- |
 -- Module         : Exercise
@@ -72,12 +73,11 @@ timeFormats = ["%d.%m.%Y %H:%M", "%Y-%m-%dT%H:%M:%S"]
 --
 readReport :: ByteString -> Maybe Report
 readReport bs =
-  do { u <- getUser bs
-    ; m <- getMessage bs
-    ; t <- getTimestamp bs
-    ; t <- msum ((`parseTimestamp` t) <$> timeFormats)
-    ; return Report { username = u, message = m, timestamp = t }
-  }
+  do username <- getUser bs
+     message <- getMessage bs
+     timestamp <- getTimestamp bs
+     timestamp <- msum ((`parseTimestamp` timestamp) <$> timeFormats)
+     return Report { username, message, timestamp }
 
 -- | Read all valid reports from a list of bytestrings.
 -- One bytestring per report.
