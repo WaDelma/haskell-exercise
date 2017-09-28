@@ -76,7 +76,7 @@ readReport bs =
   do username <- getUser bs
      message <- getMessage bs
      timestamp <- getTimestamp bs
-     timestamp <- msum ((`parseTimestamp` timestamp) <$> timeFormats)
+     timestamp <- msum $ (parseTimestamp ?? timestamp) <$> timeFormats
      return Report { username, message, timestamp }
 
 -- | Read all valid reports from a list of bytestrings.
